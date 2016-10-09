@@ -29,6 +29,7 @@ lazy val testkit = Project("elastic4s-testkit", file("elastic4s-testkit"))
 lazy val coreTests = Project("elastic4s-core-tests", file("elastic4s-core-tests"))
   .settings(name := "elastic4s-core-tests")
   .settings(
+    libraryDependencies += "com.vividsolutions" % "jts" % "1.13" % "test",
     libraryDependencies += "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
     libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % JacksonVersion % "test",
     libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % JacksonVersion % "test",
@@ -52,7 +53,7 @@ lazy val jackson = Project("elastic4s-jackson", file("elastic4s-jackson"))
     libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % JacksonVersion exclude("org.scala-lang", "scala-library"),
     libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-joda" % JacksonVersion
   ).dependsOn(core, testkit % "test")
-  
+
 lazy val circe = Project("elastic4s-circe", file("elastic4s-circe"))
 .settings(
   name := "elastic4s-circe",
