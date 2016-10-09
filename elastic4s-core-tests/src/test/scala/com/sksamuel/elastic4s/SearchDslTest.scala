@@ -4,7 +4,8 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.Preference.Shards
 import com.sksamuel.elastic4s.SuggestMode.{Missing, Popular}
 import com.sksamuel.elastic4s.analyzers.{SnowballAnalyzer, StandardAnalyzer, WhitespaceAnalyzer}
-import org.elasticsearch.common.geo.GeoDistance
+import org.elasticsearch.common.geo.{GeoDistance, ShapeRelation}
+import org.elasticsearch.common.geo.builders.CircleBuilder
 import org.elasticsearch.common.unit.DistanceUnit
 import org.elasticsearch.index.query.MatchQueryBuilder.{Operator, ZeroTermsQuery}
 import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type
@@ -545,6 +546,20 @@ class SearchDslTest extends FlatSpec with MockitoSugar with JsonSugar with OneIn
       )
     }
     req.show should matchJsonResource("/json/search/search_filter_geo_distance.json")
+  }
+
+  it should "generate correct json for geo shape filter" in {
+    val req = search in "music" types "bands" postFilter {
+      bool(
+        must(
+          matchAllQuery
+        ) filter (
+          geoShapeQuery("location", new CircleBuilder().center(100.0, 100.0).radius(1.0, DistanceUnit.METERS))
+            relation ShapeRelation.WITHIN
+          )
+      )
+    }
+    req.show should matchJsonResource("/json/search/search_filter_geo_shape.json")
   }
 
   it should "generate correct json for a rescore query" in {
