@@ -2,7 +2,8 @@ package com.sksamuel.elastic4s
 
 import com.sksamuel.elastic4s.DefinitionAttributes._
 import com.sksamuel.elastic4s.analyzers.Analyzer
-import org.elasticsearch.common.geo.GeoDistance
+import org.elasticsearch.common.geo.{GeoDistance, ShapeRelation, SpatialStrategy}
+import org.elasticsearch.common.geo.builders.ShapeBuilder
 import org.elasticsearch.common.unit.{DistanceUnit, Fuzziness}
 import org.elasticsearch.index.query.CommonTermsQueryBuilder.Operator
 import org.elasticsearch.index.query._
@@ -51,6 +52,7 @@ trait QueryDsl {
   def geoDistanceQuery(field: String): GeoDistanceQueryDefinition = GeoDistanceQueryDefinition(field)
   def geoHashCell(field: String, value: String): GeoHashCellQuery = new GeoHashCellQuery(field).geohash(value)
   def geoPolygonQuery(field: String) = GeoPolygonQueryDefinition(field)
+  def geoShapeQuery(field: String, shape: ShapeBuilder) = GeoShapeQueryDefinition(field, shape)
 
   def indicesQuery(indices: String*) = new {
     def query(query: QueryDefinition): IndicesQueryDefinition = new IndicesQueryDefinition(indices, query)
@@ -536,6 +538,42 @@ case class GeoPolygonQueryDefinition(field: String)
     builder.queryName(queryName)
     this
   }
+}
+
+case class GeoShapeQueryDefinition(field: String, shape: ShapeBuilder) extends QueryDefinition {
+  override val builder: GeoShapeQueryBuilder = QueryBuilders.geoShapeQuery(field, shape)
+  val _builder = builder
+
+  def strategy(strategy: SpatialStrategy): GeoShapeQueryDefinition = {
+    builder.strategy(strategy)
+    this
+  }
+
+  def indexedShapeIndex(indexedShapeIndex: String): GeoShapeQueryDefinition = {
+    builder.indexedShapeIndex(indexedShapeIndex)
+    this
+  }
+
+  def indexedShapePath(indexedShapePath: String): GeoShapeQueryDefinition = {
+    builder.indexedShapeIndex(indexedShapePath)
+    this
+  }
+
+  def relation(relation: ShapeRelation): GeoShapeQueryDefinition = {
+    builder.relation(relation)
+    this
+  }
+
+  def boost(boost: Float): GeoShapeQueryDefinition = {
+    builder.boost(boost)
+    this
+  }
+
+  def queryName(queryName: String): GeoShapeQueryDefinition = {
+    builder.queryName(queryName)
+    this
+  }
+
 }
 
 case class GeoDistanceQueryDefinition(field: String)
