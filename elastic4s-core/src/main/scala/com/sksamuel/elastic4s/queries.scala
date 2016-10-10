@@ -576,6 +576,51 @@ case class GeoShapeQueryDefinition(field: String, shape: ShapeBuilder) extends Q
 
 }
 
+/*
+                "geo_shape": {
+                    "location": {
+                        "shape": {
+                            "type": "envelope",
+                            "coordinates" : [[13.0, 53.0], [14.0, 52.0]]
+                        },
+                        "relation": "within"
+                    }
+                }
+
+                geoShape(Location(shape = Envelope, coordinates = List(1,2,3,4)), relation = within)
+                geoShape ( Location ( Shape (Envelope coordinates List(...) ) ) relation "within" )
+                geoShape ( Location ( Shape (Circle center (x,y) radius (1, km) ) ) relation "within" )
+ */
+
+object ShapeAttributes {
+
+  trait ShapeAttributeCenter {
+    val _builder: {def center(lon: Double, lat: Double): Any}
+
+    def center(lon: Double, lat: Double): this.type = {
+      _builder.center(lon, lat)
+      this
+    }
+  }
+
+  trait ShapeAttributeRadius {
+    val _builder: {
+      def radius(radius: String): Any
+    }
+
+    def radius(radius: String): this.type = {
+      _builder.radius(radius)
+      this
+    }
+  }
+
+}
+
+abstract class Shape(name: String)
+
+case object Circle extends Shape("circle")
+
+
 case class GeoDistanceQueryDefinition(field: String)
   extends QueryDefinition
     with DefinitionAttributeLat
