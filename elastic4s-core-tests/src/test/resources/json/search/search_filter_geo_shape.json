@@ -1,0 +1,25 @@
+{
+    "post_filter": {
+        "bool": {
+            "must": {
+                "match_all": {}
+            },
+            "filter": {
+                "geo_shape": {
+                    "location": {
+                        "shape": {
+                            "type": "circle",
+                            "radius": "1.0m",
+                            "coordinates": [
+                                100.0,
+                                100.0
+                            ]
+                        },
+                        "relation": "within"
+                    },
+                    "_name": null
+                }
+            }
+        }
+    }
+}
